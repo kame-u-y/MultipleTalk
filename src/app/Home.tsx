@@ -66,7 +66,7 @@ const Home: React.FC = (props) => {
         <form>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <h1 className={classes.title}>Spacial Sound Chat</h1>
+              <h1 className={classes.title}>Multiple Talk</h1>
             </Grid>
             <Grid item xs={12}>
               <TextField

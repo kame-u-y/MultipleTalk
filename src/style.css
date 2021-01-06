@@ -1,13 +1,24 @@
-/* h1 {
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  height: 100%;
+}
+
+h1 {
   -ms-user-select: none;
   -moz-user-select: -moz-none;
   -khtml-user-select: none;
   -webkit-user-select: none;
   user-select: none;
-} */
-h1 {
-  -ms-user-select: none;
 }
+
 .user-icon {
   position: absolute;
   border: solid black 1px;

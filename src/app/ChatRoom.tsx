@@ -7,7 +7,13 @@ import { RemoteInfo } from './interfaces/RemoteInfo';
 import { MySelf, RemoteUser } from './components/User';
 import { DefaultRemoteInfo, remoteReducer } from './functions/remoteReducer';
 import * as H from 'history';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import {
+  createStyles,
+  Grid,
+  makeStyles,
+  Paper,
+  Theme,
+} from '@material-ui/core';
 import { useCookies } from 'react-cookie';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -15,6 +21,17 @@ const useStyles = makeStyles((theme: Theme) =>
     title: {
       textAlign: 'center',
       color: 'dimgray',
+    },
+    root: {
+      flexGrow: 1,
+      // height: '100vh',
+      height: '100%',
+    },
+    paper: {
+      padding: theme.spacing(2),
+      margin: 'auto',
+      maxWidth: '100%',
+      height: '100%',
     },
   })
 );
@@ -161,62 +178,94 @@ const ChatRoom = (props: Props) => {
     setCookie('displayName', '');
   };
 
+  const leftStyle = {
+    height: '33%',
+  };
+
   if (!isSetState) {
     return <></>;
   } else if (!props.location.state) {
     return <Redirect to="/" />;
   } else {
     return (
-      <div>
-        <h1 className={classes.title}>Spacial Sound Chat</h1>
-        <Link to="/" onClick={() => handleLeave()}>
-          Leave Room
-        </Link>
-        <div id="remote-users">
-          {remotes.map((rem) => (
-            <RemoteUser
-              key={rem.peerID}
-              imgSrc={rem.imgSrc}
-              stream={rem.stream}
-              userOffset={rem.userOffset}
-            />
-          ))}
-        </div>
-        <p>Room Name: {props.location.state.roomName}</p>
-        <p>Display Name: {props.location.state.displayName}</p>
-        {/* <p>適当に部屋の名前を決めて集まれる</p>
-      <p>（例：Init Audio Context → "a"と入力 → Join Room）</p> */}
-        {/* <button onClick={initTrigger}>Init Audio Context</button> */}
-        {/* <input type="text" id="room-id" />
-      <button onClick={joinTrigger}>Join Room</button> */}
-        {/* <button onClick={videoMute}>video mute</button> */}
-        {/* <Link to="/test">test</Link> */}
-        {localStream === null ? (
-          <p>Loading...</p>
-        ) : (
-          <MySelf
-            imgSrc="https://pbs.twimg.com/profile_images/1250664544159985670/KVnA6vJu_400x400.jpg"
-            stream={localStream}
-            getXZ={({ x, z }: UserOffset) => {
-              if (x === null || z === null) return;
-              if (!room) return;
-              if (!isBreakTime) {
-                room.send({ x: x, z: z });
+      <Grid container className={classes.root}>
+        <Grid container xs={6} direction="column">
+          <Grid item style={leftStyle}>
+            <Paper className={classes.paper}>
+              <h1 className={classes.title}>Spacial Sound Chat</h1>
+            </Paper>
+          </Grid>
+          <Grid item style={leftStyle}>
+            <Paper className={classes.paper}>
+              <h1 className={classes.title}>Spacial Sound Chat</h1>
+            </Paper>
+          </Grid>
+          <Grid item style={leftStyle}>
+            <Paper className={classes.paper}>
+              <h1 className={classes.title}>Spacial Sound Chat</h1>
+            </Paper>
+          </Grid>
+        </Grid>
+        <Grid item xs={6}>
+          <Paper className={classes.paper}>
+            <h1 className={classes.title}>Spacial Sound Chat</h1>
+          </Paper>
+        </Grid>
+        {/* <Link to="/" onClick={() => handleLeave()}>
+          LeaveRoom
+        </Link> */}
+      </Grid>
 
-                const newAudioScene = resonanceAudio;
-                newAudioScene.setListenerPosition(x / 100.0, 0, z / 100.0);
-                // console.log(newAudioScene);
-                setResonanceAudio(newAudioScene);
-                setIsBreakTime(true);
-                setTimeout(() => setIsBreakTime(false), 100);
-              }
-            }}
-          />
-        )}
-        {/* <div className="speaker">aaa
-        <img src="./data/speaker.png"></img>
-      </div> */}
-      </div>
+      // <div>
+      //   <h1 className={classes.title}>Spacial Sound Chat</h1>
+      //   <Link to="/" onClick={() => handleLeave()}>
+      //     Leave Room
+      //   </Link>
+      //   <div id="remote-users">
+      //     {remotes.map((rem) => (
+      //       <RemoteUser
+      //         key={rem.peerID}
+      //         imgSrc={rem.imgSrc}
+      //         stream={rem.stream}
+      //         userOffset={rem.userOffset}
+      //       />
+      //     ))}
+      //   </div>
+      //   <p>Room Name: {props.location.state.roomName}</p>
+      //   <p>Display Name: {props.location.state.displayName}</p>
+      //   {/* <p>適当に部屋の名前を決めて集まれる</p>
+      // <p>（例：Init Audio Context → "a"と入力 → Join Room）</p> */}
+      //   {/* <button onClick={initTrigger}>Init Audio Context</button> */}
+      //   {/* <input type="text" id="room-id" />
+      // <button onClick={joinTrigger}>Join Room</button> */}
+      //   {/* <button onClick={videoMute}>video mute</button> */}
+      //   {/* <Link to="/test">test</Link> */}
+      //   {localStream === null ? (
+      //     <p>Loading...</p>
+      //   ) : (
+      //     <MySelf
+      //       imgSrc="https://pbs.twimg.com/profile_images/1250664544159985670/KVnA6vJu_400x400.jpg"
+      //       stream={localStream}
+      //       getXZ={({ x, z }: UserOffset) => {
+      //         if (x === null || z === null) return;
+      //         if (!room) return;
+      //         if (!isBreakTime) {
+      //           room.send({ x: x, z: z });
+
+      //           const newAudioScene = resonanceAudio;
+      //           newAudioScene.setListenerPosition(x / 100.0, 0, z / 100.0);
+      //           // console.log(newAudioScene);
+      //           setResonanceAudio(newAudioScene);
+      //           setIsBreakTime(true);
+      //           setTimeout(() => setIsBreakTime(false), 100);
+      //         }
+      //       }}
+      //     />
+      //   )}
+      //   {/* <div className="speaker">aaa
+      //   <img src="./data/speaker.png"></img>
+      // </div> */}
+      // </div>
     );
   }
 };

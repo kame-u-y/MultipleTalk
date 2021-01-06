@@ -1,0 +1,52 @@
+{
+  "name": "spacial-sound-chat",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --open",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kame-v-d/AwesomeVideoChat.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kame-v-d/AwesomeVideoChat/issues"
+  },
+  "homepage": "https://github.com/kame-v-d/AwesomeVideoChat#readme",
+  "devDependencies": {
+    "@types/react-router-dom": "^5.1.5",
+    "@types/webpack-env": "^1.15.2",
+    "css-loader": "^4.0.0",
+    "cssnano": "^4.1.10",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "react-moveable": "^0.21.6",
+    "resonance-audio": "^1.0.0",
+    "skyway-js": "^3.0.2",
+    "style-loader": "^1.2.1",
+    "sugarss": "^2.0.0",
+    "ts-loader": "^8.0.1",
+    "typescript": "^3.9.7",
+    "webpack": "^4.44.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+  },
+  "dependencies": {
+    "@material-ui/core": "^4.11.2",
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "react": "^16.13.1",
+    "react-cookie": "^4.0.3",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "source-map-loader": "^1.0.1"
+  },
+  "main": "postcss.config.js",
+  "description": ""
+}

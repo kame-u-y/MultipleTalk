@@ -51,7 +51,7 @@ const TalkPaper = (props: { isMain: Boolean }) => {
         square
         style={{
           height: `calc(${props.isMain ? '100vh' : '33.3vh'} - 22px - 40px)`,
-          backgroundColor: 'gray',
+          //   backgroundColor: 'gray',
           overflow: 'scroll',
         }}
       >

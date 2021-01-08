@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useMemo } from 'react';
+import React, { useState, useEffect, useReducer, useMemo, FC } from 'react';
 import { Link, Redirect, Route, RouteComponentProps } from 'react-router-dom';
 import Peer, { RoomStream, MeshRoom } from 'skyway-js';
 import { ResonanceAudio } from 'resonance-audio';
@@ -34,26 +34,24 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props extends RouteComponentProps<{}> {
+interface Props extends RouteComponentProps {
+  peer: Peer;
   location: H.Location<{
-    roomName: String;
-    displayName: String;
+    roomName: string;
+    displayName: string;
   }>;
 }
 
 const ChatRoom = (props: Props) => {
-  const [isSetState, setIsSetState] = useState<Boolean>(false);
+  if (!props.location.state) {
+    console.log('hoge');
+    return <Redirect to="/" />;
+  }
+
+  const peer = props.peer;
   const [cookies, setCookie] = useCookies(['roomName', 'displayName']);
   const classes = useStyles();
 
-  const peer: Peer = useMemo(
-    () =>
-      new Peer({
-        key: 'fd3c4153-7356-46f2-a4d0-8aab4716e77c',
-        debug: 3,
-      }),
-    []
-  );
   const [localStream, setLocalStream] = useState<MediaStream>(null);
   const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
 
@@ -73,30 +71,21 @@ const ChatRoom = (props: Props) => {
     setResonanceAudio(newResonanceAudio);
   };
 
-  useEffect(() => {
-    initAudio();
-    navigator.mediaDevices
-      .getUserMedia({
-        video: true,
-        audio: true,
-      })
-      .then((stream) => {
-        setLocalStream(stream);
-        setIsSetState(true);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-
   // ボタン押すなりなんなり
   const joinTrigger = () => {
     if (!audioCtx) {
-      alert('まず初期化してくれ');
+      alert('AudioContext is not initialized');
       return;
     }
-    if (!peer.open) return;
-    const roomID = document.querySelector<HTMLInputElement>('#room-id').value;
+    if (!peer.open) {
+      alert('peer is not open');
+      return;
+    }
+    // const roomID = document.querySelector<HTMLInputElement>('#room-id').value;
+    const roomID = props.location.state.roomName;
+    console.log('a1');
+    console.log(roomID);
+    console.log('a2');
     const room: MeshRoom = peer.joinRoom(roomID, {
       mode: 'mesh',
       stream: localStream,
@@ -114,7 +103,8 @@ const ChatRoom = (props: Props) => {
     room.on('stream', async (stream: RoomStream) => {
       //// resonance audioのノードの追加
       const audioSrc = resonanceAudio.createSource();
-      audioSrc.setPosition(-0.707, 0, -0.707);
+      // audioSrc.setPosition(-0.707, 0, -0.707);
+      audioSrc.setPosition(-1, 0, 0);
       const streamSrc = audioCtx.createMediaStreamSource(stream);
       streamSrc.connect(audioSrc.input);
 
@@ -135,23 +125,22 @@ const ChatRoom = (props: Props) => {
     });
 
     room.on('data', ({ data, src }) => {
-      const newAudioSrc = remotes.find((remo: RemoteInfo) => {
-        return remo.peerID === src;
-      }).audioSrc;
-      newAudioSrc.setPosition(data.x / 100.0, 0, data.z / 100.0);
-
-      remoteDispatch({
-        type: 'updateUserOffset',
-        remote: {
-          ...DefaultRemoteInfo,
-          peerID: src,
-          userOffset: {
-            x: data.x,
-            z: data.z,
-          },
-          audioSrc: newAudioSrc,
-        },
-      });
+      // const newAudioSrc = remotes.find((remo: RemoteInfo) => {
+      //   return remo.peerID === src;
+      // }).audioSrc;
+      // newAudioSrc.setPosition(data.x / 100.0, 0, data.z / 100.0);
+      // remoteDispatch({
+      //   type: 'updateUserOffset',
+      //   remote: {
+      //     ...DefaultRemoteInfo,
+      //     peerID: src,
+      //     userOffset: {
+      //       x: data.x,
+      //       z: data.z,
+      //     },
+      //     audioSrc: newAudioSrc,
+      //   },
+      // });
     });
 
     room.on('peerLeave', (peerID) => {
@@ -171,27 +160,47 @@ const ChatRoom = (props: Props) => {
     });
   };
 
+  useEffect(() => {
+    initAudio();
+    navigator.mediaDevices
+      .getUserMedia({
+        video: false,
+        audio: true,
+      })
+      .then((stream) => {
+        setLocalStream(stream);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!localStream) return;
+    joinTrigger();
+  }, [localStream]);
+
   const handleLeave = () => {
     setCookie('roomName', '');
     setCookie('displayName', '');
   };
 
-  if (!isSetState) {
-    return <></>;
-  } else if (!props.location.state) {
+  if (!props.location.state) {
     return <Redirect to="/" />;
   } else {
     return (
       <Grid container className={classes.root}>
-        <Grid container xs={6} direction="column">
-          <Grid item>
-            <SubTalk />
-          </Grid>
-          <Grid item>
-            <SubTalk />
-          </Grid>
-          <Grid item>
-            <SubTalk />
+        <Grid item xs={6}>
+          <Grid container direction="column">
+            <Grid item>
+              <SubTalk />
+            </Grid>
+            <Grid item>
+              <SubTalk />
+            </Grid>
+            <Grid item>
+              <SubTalk />
+            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={6}>

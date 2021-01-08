@@ -12,16 +12,14 @@ import React from 'react';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     subPaper: {
-      padding: '3%',
-      height: '88%',
-      display: 'flex',
-      flexFlow: 'column',
+      padding: '10px',
+      height: 'calc(33.3vh - 22px)',
+      position: 'relative',
     },
     mainPaper: {
-      padding: '3%',
-      height: '96%',
-      display: 'flex',
-      flexFlow: 'column',
+      padding: '10px',
+      height: 'calc(100vh - 22px)',
+      position: 'relative',
     },
     textfield: {
       width: '100%',
@@ -32,8 +30,9 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     button: {
       float: 'right',
-      marginLeft: '10px',
+      marginLeft: '15px',
       minWidth: '55px',
+      maxWidth: '70px',
       height: '40px',
     },
   })
@@ -47,19 +46,40 @@ const TalkPaper = (props: { isMain: Boolean }) => {
       className={props.isMain ? classes.mainPaper : classes.subPaper}
       variant="outlined"
     >
-      {/* <div> */}
-      <div style={{ flex: 1 }}>
+      <Paper
+        elevation={0}
+        square
+        style={{
+          height: `calc(${props.isMain ? '100vh' : '33.3vh'} - 22px - 40px)`,
+          backgroundColor: 'gray',
+          overflow: 'scroll',
+        }}
+      >
         <h1>hoge</h1>
-      </div>
-      <Grid container>
-        {/* <Box> */}
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+        <h1>hoge</h1>
+      </Paper>
+      <Grid container justify="center">
         <Grid item xs={11}>
           <TextField
             className={classes.textfield}
             id="room-name"
             variant="outlined"
-            // helperText="hoge"
             multiline
+            rowsMax={5}
             size="small"
             onChange={(e: any) => handleChange(e)}
           />
@@ -76,7 +96,6 @@ const TalkPaper = (props: { isMain: Boolean }) => {
           </Button>
         </Grid>
       </Grid>
-      {/* </div> */}
     </Paper>
   );
 };

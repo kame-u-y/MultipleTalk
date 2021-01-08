@@ -28,8 +28,8 @@ const useStyles = makeStyles((theme: Theme) =>
       color: 'dimgray',
     },
     root: {
-      flexGrow: 1,
-      height: '100%',
+      // flexGrow: 1,
+      height: '100vh',
     },
   })
 );
@@ -176,10 +176,6 @@ const ChatRoom = (props: Props) => {
     setCookie('displayName', '');
   };
 
-  const leftStyle = {
-    height: '33.3%',
-  };
-
   if (!isSetState) {
     return <></>;
   } else if (!props.location.state) {
@@ -188,13 +184,13 @@ const ChatRoom = (props: Props) => {
     return (
       <Grid container className={classes.root}>
         <Grid container xs={6} direction="column">
-          <Grid item style={leftStyle}>
+          <Grid item>
             <SubTalk />
           </Grid>
-          <Grid item style={leftStyle}>
+          <Grid item>
             <SubTalk />
           </Grid>
-          <Grid item style={leftStyle}>
+          <Grid item>
             <SubTalk />
           </Grid>
         </Grid>

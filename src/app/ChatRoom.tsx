@@ -51,10 +51,16 @@ const ChatRoom = (props: Props) => {
   const classes = useStyles();
 
   const peer = props.peer;
-  const [localStream, setLocalStream] = useState<MediaStream>(null);
+  // const [localStream, setLocalStream] = useState<MediaStream>(null);
+  const [mainLocalStream, setMainLocalStream] = useState<MediaStream>(null);
+  const [subLocalStream, setSubLocalStream] = useState<MediaStream>(null);
+
   const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
 
-  const [room, setRoom] = useState<MeshRoom>(null);
+  // const [room, setRoom] = useState<MeshRoom>(null);
+  const [mainRoom, setMainRoom] = useState<MeshRoom>(null);
+  const [subRoom, setSubRoom] = useState<MeshRoom>(null);
+
   const [audioCtx, setAudioCtx] = useState<AudioContext>(null);
   const [resonanceAudio, setResonanceAudio] = useState<ResonanceAudio>(null);
 
@@ -78,7 +84,9 @@ const ChatRoom = (props: Props) => {
         audio: true,
       })
       .then((stream) => {
-        setLocalStream(stream);
+        // setLocalStream(stream);
+        setMainLocalStream(stream);
+        setSubLocalStream(stream);
       })
       .catch((err) => {
         console.error(err);
@@ -95,91 +103,104 @@ const ChatRoom = (props: Props) => {
       alert('peer is not open');
       return;
     }
-    // const roomID = document.querySelector<HTMLInputElement>('#room-id').value;
-    const roomID = props.location.state.roomName;
-    const room: MeshRoom = peer.joinRoom(roomID, {
-      mode: 'mesh',
-      stream: localStream,
-    });
-    setRoom(room);
 
-    room.once('open', () => {
-      console.log('=== You joined ===');
-    });
-
-    room.on('peerJoin', (peerID) => {
-      console.log(`=== ${peerID} joined ===`);
-    });
-
-    room.on('stream', async (stream: RoomStream) => {
-      //// resonance audioのノードの追加
-      const audioSrc = resonanceAudio.createSource();
-      audioSrc.setPosition(1, 0, 0);
-      // audioSrc.setPosition(0, 0, 0);
-      const streamSrc = audioCtx.createMediaStreamSource(stream);
-      streamSrc.connect(audioSrc.input);
-
-      const audioElement = document.createElement('audio');
-      audioElement.srcObject = stream;
-      audioElement.play();
-      audioElement.muted = true;
-
-      ////
-      remoteDispatch({
-        type: 'add',
-        remote: {
-          peerID: stream.peerId,
-          stream: stream,
-          imgSrc: '',
-          userOffset: {
-            x: 0,
-            z: 0,
-          },
-          audioSrc: audioSrc,
-        },
+    const initRoom = (side: string): void => {
+      const roomID = `${props.location.state.roomName}_${side}`;
+      const room: MeshRoom = peer.joinRoom(roomID, {
+        mode: 'mesh',
+        stream: side === 'main' ? mainLocalStream : subLocalStream,
       });
-    });
+      if (side === 'main') {
+        setMainRoom(room);
+      } else {
+        setSubRoom(room);
+      }
 
-    room.on('data', ({ data, src }) => {
-      // const newAudioSrc = remotes.find((remo: RemoteInfo) => {
-      //   return remo.peerID === src;
-      // }).audioSrc;
-      // newAudioSrc.setPosition(data.x / 100.0, 0, data.z / 100.0);
-      // remoteDispatch({
-      //   type: 'updateUserOffset',
-      //   remote: {
-      //     ...DefaultRemoteInfo,
-      //     peerID: src,
-      //     userOffset: {
-      //       x: data.x,
-      //       z: data.z,
-      //     },
-      //     audioSrc: newAudioSrc,
-      //   },
-      // });
-    });
+      room.once('open', () => {
+        console.log('=== You joined ===');
+      });
 
-    room.on('peerLeave', (peerID) => {
-      const remoteVideo: HTMLVideoElement = document.querySelector(
-        `[data-peer-id=${peerID}`
-      );
-      // remoteVideo.current.srcObject.getTracks().forEach((track) => track.stop());
-      remoteVideo.srcObject = null;
-      remoteVideo.remove();
-      // remotes = remotes.filter((v) => v.peerID !== peerID);
-      console.log(`=== ${peerID} left ===`);
-    });
+      room.on('peerJoin', (peerID) => {
+        console.log(`=== ${peerID} joined ===`);
+      });
 
-    room.once('close', () => {
-      console.log('=== You left ===');
-      // remotes = [];
-    });
+      room.on('stream', async (stream: RoomStream) => {
+        console.log(room);
+        //// resonance audioのノードの追加
+        const audioSrc = resonanceAudio.createSource();
+        if (room.name === `${props.location.state.roomName}_main`) {
+          audioSrc.setPosition(1, 0, 0);
+        } else if (room.name === `${props.location.state.roomName}_sub`) {
+          audioSrc.setPosition(-1, 0, 0);
+        }
+        // audioSrc.setPosition(0, 0, 0);
+        const streamSrc = audioCtx.createMediaStreamSource(stream);
+        streamSrc.connect(audioSrc.input);
+
+        const audioElement = document.createElement('audio');
+        audioElement.srcObject = stream;
+        audioElement.play();
+        audioElement.muted = true;
+
+        ////
+        remoteDispatch({
+          type: 'add',
+          remote: {
+            peerID: stream.peerId,
+            stream: stream,
+            imgSrc: '',
+            userOffset: {
+              x: 0,
+              z: 0,
+            },
+            audioSrc: audioSrc,
+          },
+        });
+      });
+
+      room.on('data', ({ data, src }) => {
+        // const newAudioSrc = remotes.find((remo: RemoteInfo) => {
+        //   return remo.peerID === src;
+        // }).audioSrc;
+        // newAudioSrc.setPosition(data.x / 100.0, 0, data.z / 100.0);
+        // remoteDispatch({
+        //   type: 'updateUserOffset',
+        //   remote: {
+        //     ...DefaultRemoteInfo,
+        //     peerID: src,
+        //     userOffset: {
+        //       x: data.x,
+        //       z: data.z,
+        //     },
+        //     audioSrc: newAudioSrc,
+        //   },
+        // });
+      });
+
+      room.on('peerLeave', (peerID) => {
+        const remoteVideo: HTMLVideoElement = document.querySelector(
+          `[data-peer-id=${peerID}`
+        );
+        // remoteVideo.current.srcObject.getTracks().forEach((track) => track.stop());
+        remoteVideo.srcObject = null;
+        remoteVideo.remove();
+        // remotes = remotes.filter((v) => v.peerID !== peerID);
+        console.log(`=== ${peerID} left ===`);
+      });
+
+      room.once('close', () => {
+        console.log('=== You left ===');
+        // remotes = [];
+      });
+    };
+    initRoom('main');
+    initRoom('sub');
   };
 
   useEffect(() => {
-    if (!localStream) return;
+    if (!mainLocalStream || !subLocalStream) return;
     joinTrigger();
-  }, [localStream]);
+  }, [mainLocalStream, subLocalStream]);
 
   const handleLeave = () => {
     setCookie('roomName', '');

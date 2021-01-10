@@ -8,10 +8,10 @@ import {
 import Home from './Home';
 import ChatRoom from './ChatRoom';
 import Peer from 'skyway-js';
-import * as H from 'history';
+import { Location } from 'history';
 
 interface GivenProps extends RouteComponentProps {
-  location: H.Location<{
+  location: Location<{
     roomName: string;
     displayName: string;
   }>;
@@ -30,15 +30,11 @@ const App: React.FC = () => {
     <Router>
       <Switch>
         <Route exact path="/" component={Home} />
-        {/* <Route exact path="/chatroom" component={ChatRoom} /> */}
         <Route
           exact
           path="/chatroom"
           render={(props: GivenProps) => <ChatRoom peer={peer} {...props} />}
         />
-        {/* <Route exact path="/chatroom">
-          <ChatRoom peer={peer} />
-        </Route> */}
       </Switch>
     </Router>
   );

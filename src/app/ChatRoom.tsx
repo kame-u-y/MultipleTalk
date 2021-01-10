@@ -6,7 +6,7 @@ import { UserOffset } from './interfaces/UserOffset';
 import { RemoteInfo } from './interfaces/RemoteInfo';
 import { MySelf, RemoteUser } from './components/User';
 import { DefaultRemoteInfo, remoteReducer } from './functions/remoteReducer';
-import * as H from 'history';
+import { Location } from 'history';
 import {
   Box,
   Button,
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 interface Props extends RouteComponentProps {
   peer: Peer;
-  location: H.Location<{
+  location: Location<{
     roomName: string;
     displayName: string;
   }>;
@@ -44,7 +44,6 @@ interface Props extends RouteComponentProps {
 
 const ChatRoom = (props: Props) => {
   if (!props.location.state) {
-    console.log('hoge');
     return <Redirect to="/" />;
   }
 
@@ -103,8 +102,8 @@ const ChatRoom = (props: Props) => {
     room.on('stream', async (stream: RoomStream) => {
       //// resonance audioのノードの追加
       const audioSrc = resonanceAudio.createSource();
-      // audioSrc.setPosition(-0.707, 0, -0.707);
-      audioSrc.setPosition(-1, 0, 0);
+      audioSrc.setPosition(-0.707, 0, -0.707);
+      // audioSrc.setPosition(0, 0, 0);
       const streamSrc = audioCtx.createMediaStreamSource(stream);
       streamSrc.connect(audioSrc.input);
 

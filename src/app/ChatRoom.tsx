@@ -107,10 +107,7 @@ const ChatRoom = (props: Props) => {
 
     const newSubLocalStream = new MediaStream();
     newSubLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
-    // newSubLocalStream
-    // newSubLocalStream
-    //   .getAudioTracks()
-    //   .forEach((track) => (track.enabled = false));
+    newSubLocalStream.getAudioTracks()[0].enabled = false;
     setSubLocalStream(newSubLocalStream);
     console.warn('init main,sub');
     console.log(localStream);
@@ -240,8 +237,9 @@ const ChatRoom = (props: Props) => {
   };
 
   const muteHandler = () => {
-    mainLocalStream.getAudioTracks()[0].enabled = !mainLocalStream.getAudioTracks()[0]
-      .enabled;
+    const toggle: boolean = mainLocalStream.getAudioTracks()[0].enabled;
+    mainLocalStream.getAudioTracks()[0].enabled = !toggle;
+    subLocalStream.getAudioTracks()[0].enabled = toggle;
     // console.warn('muteHandler//');
     // console.log(mainLocalStream);
     // console.warn('//muteHandler');

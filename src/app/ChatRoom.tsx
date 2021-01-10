@@ -102,11 +102,11 @@ const ChatRoom = (props: Props) => {
   useEffect(() => {
     if (!localStream) return;
     const newMainLocalStream = new MediaStream();
-    newMainLocalStream.addTrack(localStream.getAudioTracks()[0]);
+    newMainLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
     setMainLocalStream(newMainLocalStream);
 
     const newSubLocalStream = new MediaStream();
-    newSubLocalStream.addTrack(localStream.getAudioTracks()[0]);
+    newSubLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
     // newSubLocalStream
     // newSubLocalStream
     //   .getAudioTracks()
@@ -242,6 +242,9 @@ const ChatRoom = (props: Props) => {
   const muteHandler = () => {
     mainLocalStream.getAudioTracks()[0].enabled = !mainLocalStream.getAudioTracks()[0]
       .enabled;
+    // console.warn('muteHandler//');
+    // console.log(mainLocalStream);
+    // console.warn('//muteHandler');
   };
 
   return (
@@ -261,7 +264,7 @@ const ChatRoom = (props: Props) => {
       </Grid>
       <Grid item xs={6}>
         <MainTalk />
-        <button onClick={() => muteHandler()}>mute</button>
+        <button onClick={() => muteHandler()}>mutete</button>
       </Grid>
       {/* <Link to="/" onClick={() => handleLeave()}>
           LeaveRoom

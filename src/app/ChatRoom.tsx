@@ -156,9 +156,11 @@ const ChatRoom = (props: Props) => {
         const audioSrc = resonanceAudio.createSource();
         if (room.name === `${props.location.state.roomName}_main`) {
           audioSrc.setPosition(0.7, 0, 0);
+          console.log(stream);
           console.warn(`main matched`);
         } else if (room.name === `${props.location.state.roomName}_sub`) {
           audioSrc.setPosition(-0.7, 0, 0);
+          console.log(stream);
           console.warn(`sub matched`);
         } else {
           console.error('not match roomname');
@@ -237,6 +239,11 @@ const ChatRoom = (props: Props) => {
     setCookie('displayName', '');
   };
 
+  const muteHandler = () => {
+    mainLocalStream.getAudioTracks()[0].enabled = !mainLocalStream.getAudioTracks()[0]
+      .enabled;
+  };
+
   return (
     <Grid container className={classes.root}>
       <Grid item xs={6}>
@@ -254,6 +261,7 @@ const ChatRoom = (props: Props) => {
       </Grid>
       <Grid item xs={6}>
         <MainTalk />
+        <button onClick={() => muteHandler()}>mute</button>
       </Grid>
       {/* <Link to="/" onClick={() => handleLeave()}>
           LeaveRoom

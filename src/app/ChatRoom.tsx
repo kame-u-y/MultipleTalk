@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useReducer, useMemo, FC } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useReducer,
+  useMemo,
+  FC,
+  createElement,
+} from 'react';
 import { Link, Redirect, Route, RouteComponentProps } from 'react-router-dom';
 import Peer, { RoomStream, MeshRoom } from 'skyway-js';
 import { ResonanceAudio } from 'resonance-audio';
@@ -51,7 +58,7 @@ const ChatRoom = (props: Props) => {
   const classes = useStyles();
 
   const peer = props.peer;
-  // const [localStream, setLocalStream] = useState<MediaStream>(null);
+  const [localStream, setLocalStream] = useState<MediaStream>(null);
   const [mainLocalStream, setMainLocalStream] = useState<MediaStream>(null);
   const [subLocalStream, setSubLocalStream] = useState<MediaStream>(null);
 
@@ -84,14 +91,32 @@ const ChatRoom = (props: Props) => {
         audio: true,
       })
       .then((stream) => {
-        // setLocalStream(stream);
-        setMainLocalStream(stream);
-        setSubLocalStream(stream);
+        setLocalStream(stream);
+        console.warn('init mediadevice');
       })
       .catch((err) => {
         console.error(err);
       });
   }, []);
+
+  useEffect(() => {
+    if (!localStream) return;
+    const newMainLocalStream = new MediaStream();
+    newMainLocalStream.addTrack(localStream.getAudioTracks()[0]);
+    setMainLocalStream(newMainLocalStream);
+
+    const newSubLocalStream = new MediaStream();
+    newSubLocalStream.addTrack(localStream.getAudioTracks()[0]);
+    // newSubLocalStream
+    // newSubLocalStream
+    //   .getAudioTracks()
+    //   .forEach((track) => (track.enabled = false));
+    setSubLocalStream(newSubLocalStream);
+    console.warn('init main,sub');
+    console.log(localStream);
+    console.log(newMainLocalStream);
+    console.log(newSubLocalStream);
+  }, [localStream]);
 
   // ボタン押すなりなんなり
   const joinTrigger = () => {
@@ -115,7 +140,7 @@ const ChatRoom = (props: Props) => {
       } else {
         setSubRoom(room);
       }
-
+      console.warn('init room');
       room.once('open', () => {
         console.log('=== You joined ===');
       });
@@ -125,13 +150,18 @@ const ChatRoom = (props: Props) => {
       });
 
       room.on('stream', async (stream: RoomStream) => {
-        console.log(room);
-        //// resonance audioのノードの追加
+        console.log(stream);
+        console.warn(room.name);
+        // resonance audioのノードの追加
         const audioSrc = resonanceAudio.createSource();
         if (room.name === `${props.location.state.roomName}_main`) {
-          audioSrc.setPosition(1, 0, 0);
+          audioSrc.setPosition(0.7, 0, 0);
+          console.warn(`main matched`);
         } else if (room.name === `${props.location.state.roomName}_sub`) {
-          audioSrc.setPosition(-1, 0, 0);
+          audioSrc.setPosition(-0.7, 0, 0);
+          console.warn(`sub matched`);
+        } else {
+          console.error('not match roomname');
         }
         // audioSrc.setPosition(0, 0, 0);
         const streamSrc = audioCtx.createMediaStreamSource(stream);

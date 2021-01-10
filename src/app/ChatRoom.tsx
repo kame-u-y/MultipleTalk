@@ -47,10 +47,10 @@ const ChatRoom = (props: Props) => {
     return <Redirect to="/" />;
   }
 
-  const peer = props.peer;
   const [cookies, setCookie] = useCookies(['roomName', 'displayName']);
   const classes = useStyles();
 
+  const peer = props.peer;
   const [localStream, setLocalStream] = useState<MediaStream>(null);
   const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
 
@@ -70,6 +70,21 @@ const ChatRoom = (props: Props) => {
     setResonanceAudio(newResonanceAudio);
   };
 
+  useEffect(() => {
+    initAudio();
+    navigator.mediaDevices
+      .getUserMedia({
+        video: false,
+        audio: true,
+      })
+      .then((stream) => {
+        setLocalStream(stream);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
+
   // ボタン押すなりなんなり
   const joinTrigger = () => {
     if (!audioCtx) {
@@ -82,9 +97,6 @@ const ChatRoom = (props: Props) => {
     }
     // const roomID = document.querySelector<HTMLInputElement>('#room-id').value;
     const roomID = props.location.state.roomName;
-    console.log('a1');
-    console.log(roomID);
-    console.log('a2');
     const room: MeshRoom = peer.joinRoom(roomID, {
       mode: 'mesh',
       stream: localStream,
@@ -102,10 +114,15 @@ const ChatRoom = (props: Props) => {
     room.on('stream', async (stream: RoomStream) => {
       //// resonance audioのノードの追加
       const audioSrc = resonanceAudio.createSource();
-      audioSrc.setPosition(-0.707, 0, -0.707);
+      audioSrc.setPosition(1, 0, 0);
       // audioSrc.setPosition(0, 0, 0);
       const streamSrc = audioCtx.createMediaStreamSource(stream);
       streamSrc.connect(audioSrc.input);
+
+      const audioElement = document.createElement('audio');
+      audioElement.srcObject = stream;
+      audioElement.play();
+      audioElement.muted = true;
 
       ////
       remoteDispatch({
@@ -160,21 +177,6 @@ const ChatRoom = (props: Props) => {
   };
 
   useEffect(() => {
-    initAudio();
-    navigator.mediaDevices
-      .getUserMedia({
-        video: false,
-        audio: true,
-      })
-      .then((stream) => {
-        setLocalStream(stream);
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, []);
-
-  useEffect(() => {
     if (!localStream) return;
     joinTrigger();
   }, [localStream]);
@@ -184,33 +186,29 @@ const ChatRoom = (props: Props) => {
     setCookie('displayName', '');
   };
 
-  if (!props.location.state) {
-    return <Redirect to="/" />;
-  } else {
-    return (
-      <Grid container className={classes.root}>
-        <Grid item xs={6}>
-          <Grid container direction="column">
-            <Grid item>
-              <SubTalk />
-            </Grid>
-            <Grid item>
-              <SubTalk />
-            </Grid>
-            <Grid item>
-              <SubTalk />
-            </Grid>
+  return (
+    <Grid container className={classes.root}>
+      <Grid item xs={6}>
+        <Grid container direction="column">
+          <Grid item>
+            <SubTalk />
+          </Grid>
+          <Grid item>
+            <SubTalk />
+          </Grid>
+          <Grid item>
+            <SubTalk />
           </Grid>
         </Grid>
-        <Grid item xs={6}>
-          <MainTalk />
-        </Grid>
-        {/* <Link to="/" onClick={() => handleLeave()}>
+      </Grid>
+      <Grid item xs={6}>
+        <MainTalk />
+      </Grid>
+      {/* <Link to="/" onClick={() => handleLeave()}>
           LeaveRoom
         </Link> */}
-      </Grid>
-    );
-  }
+    </Grid>
+  );
 };
 
 export default ChatRoom;

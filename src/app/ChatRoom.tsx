@@ -1,31 +1,11 @@
-import React, {
-  useState,
-  useEffect,
-  useReducer,
-  useMemo,
-  FC,
-  createElement,
-} from 'react';
-import { Link, Redirect, Route, RouteComponentProps } from 'react-router-dom';
-import Peer, { RoomStream, MeshRoom } from 'skyway-js';
-import { ResonanceAudio } from 'resonance-audio';
-import { UserOffset } from './interfaces/UserOffset';
-import { RemoteInfo } from './interfaces/RemoteInfo';
-import { MySelf, RemoteUser } from './components/User';
-import { DefaultRemoteInfo, remoteReducer } from './functions/remoteReducer';
-import { Location } from 'history';
-import {
-  Box,
-  Button,
-  createStyles,
-  Grid,
-  makeStyles,
-  Paper,
-  TextField,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import React, { useState, useEffect, useReducer } from 'react';
+import { Redirect } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
+import { RoomStream, MeshRoom } from 'skyway-js';
+import { ResonanceAudio } from 'resonance-audio';
+import { createStyles, Grid, makeStyles, Theme } from '@material-ui/core';
+import { remoteReducer } from './functions/remoteReducer';
+import { ChatRoomProps } from './interfaces/Props';
 import { MainTalk, SubTalk } from './components/TalkPaper';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,15 +21,7 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-interface Props extends RouteComponentProps {
-  peer: Peer;
-  location: Location<{
-    roomName: string;
-    displayName: string;
-  }>;
-}
-
-const ChatRoom = (props: Props) => {
+const ChatRoom = (props: ChatRoomProps) => {
   if (!props.location.state) {
     return <Redirect to="/" />;
   }
@@ -57,63 +29,48 @@ const ChatRoom = (props: Props) => {
   const [cookies, setCookie] = useCookies(['roomName', 'displayName']);
   const classes = useStyles();
 
-  const peer = props.peer;
+  const [audioCtx, setAudioCtx] = useState<AudioContext>(null);
+  const [resonanceAudio, setResonanceAudio] = useState<ResonanceAudio>(null);
+
   const [localStream, setLocalStream] = useState<MediaStream>(null);
   const [mainLocalStream, setMainLocalStream] = useState<MediaStream>(null);
   const [subLocalStream, setSubLocalStream] = useState<MediaStream>(null);
 
-  const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
-
-  // const [room, setRoom] = useState<MeshRoom>(null);
+  const peer = props.peer;
   const [mainRoom, setMainRoom] = useState<MeshRoom>(null);
   const [subRoom, setSubRoom] = useState<MeshRoom>(null);
+  const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
 
-  const [audioCtx, setAudioCtx] = useState<AudioContext>(null);
-  const [resonanceAudio, setResonanceAudio] = useState<ResonanceAudio>(null);
-
-  const [isBreakTime, setIsBreakTime] = useState<Boolean>(false);
-
-  // resonance audioに関する初期化
-  const initAudio = () => {
+  useEffect(() => {
+    // resonanceAudioの初期化
     const newAudioCtx = new AudioContext();
     const newResonanceAudio = new ResonanceAudio(newAudioCtx);
     newResonanceAudio.output.connect(newAudioCtx.destination);
-
     setAudioCtx(newAudioCtx);
     setResonanceAudio(newResonanceAudio);
-  };
 
-  useEffect(() => {
-    initAudio();
+    // localStreamの初期化
     navigator.mediaDevices
       .getUserMedia({
         video: false,
         audio: true,
       })
       .then((stream) => {
+        const newMainLocalStream = new MediaStream();
+        newMainLocalStream.addTrack(stream.clone().getAudioTracks()[0]);
+
+        const newSubLocalStream = new MediaStream();
+        newSubLocalStream.addTrack(stream.clone().getAudioTracks()[0]);
+        newSubLocalStream.getAudioTracks()[0].enabled = false;
+
         setLocalStream(stream);
-        console.warn('init mediadevice');
+        setMainLocalStream(newMainLocalStream);
+        setSubLocalStream(newSubLocalStream);
       })
       .catch((err) => {
         console.error(err);
       });
   }, []);
-
-  useEffect(() => {
-    if (!localStream) return;
-    const newMainLocalStream = new MediaStream();
-    newMainLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
-    setMainLocalStream(newMainLocalStream);
-
-    const newSubLocalStream = new MediaStream();
-    newSubLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
-    newSubLocalStream.getAudioTracks()[0].enabled = false;
-    setSubLocalStream(newSubLocalStream);
-    console.warn('init main,sub');
-    console.log(localStream);
-    console.log(newMainLocalStream);
-    console.log(newSubLocalStream);
-  }, [localStream]);
 
   // ボタン押すなりなんなり
   const joinTrigger = () => {
@@ -126,18 +83,15 @@ const ChatRoom = (props: Props) => {
       return;
     }
 
-    const initRoom = (side: string): void => {
-      const roomID = `${props.location.state.roomName}_${side}`;
-      const room: MeshRoom = peer.joinRoom(roomID, {
-        mode: 'mesh',
-        stream: side === 'main' ? mainLocalStream : subLocalStream,
-      });
-      if (side === 'main') {
-        setMainRoom(room);
-      } else {
-        setSubRoom(room);
-      }
-      console.warn('init room');
+    const initRoom = (isMain: boolean): void => {
+      const room: MeshRoom = peer.joinRoom(
+        `${props.location.state.roomName}_${isMain ? 'main' : 'sub'}`,
+        {
+          mode: 'mesh',
+          stream: isMain ? mainLocalStream : subLocalStream,
+        }
+      );
+
       room.once('open', () => {
         console.log('=== You joined ===');
       });
@@ -147,31 +101,19 @@ const ChatRoom = (props: Props) => {
       });
 
       room.on('stream', async (stream: RoomStream) => {
-        console.log(stream);
-        console.warn(room.name);
         // resonance audioのノードの追加
         const audioSrc = resonanceAudio.createSource();
-        if (room.name === `${props.location.state.roomName}_main`) {
-          audioSrc.setPosition(0.7, 0, 0);
-          console.log(stream);
-          console.warn(`main matched`);
-        } else if (room.name === `${props.location.state.roomName}_sub`) {
-          audioSrc.setPosition(-0.7, 0, 0);
-          console.log(stream);
-          console.warn(`sub matched`);
-        } else {
-          console.error('not match roomname');
-        }
-        // audioSrc.setPosition(0, 0, 0);
+        const isMain = room.name === `${props.location.state.roomName}_main`;
+        audioSrc.setPosition(isMain ? 0.7 : -0.7, 0, 0);
         const streamSrc = audioCtx.createMediaStreamSource(stream);
         streamSrc.connect(audioSrc.input);
 
+        // 音を出すためにはaudio elementの生成が必要
         const audioElement = document.createElement('audio');
         audioElement.srcObject = stream;
         audioElement.play();
         audioElement.muted = true;
 
-        ////
         remoteDispatch({
           type: 'add',
           remote: {
@@ -188,42 +130,25 @@ const ChatRoom = (props: Props) => {
       });
 
       room.on('data', ({ data, src }) => {
-        // const newAudioSrc = remotes.find((remo: RemoteInfo) => {
-        //   return remo.peerID === src;
-        // }).audioSrc;
-        // newAudioSrc.setPosition(data.x / 100.0, 0, data.z / 100.0);
-        // remoteDispatch({
-        //   type: 'updateUserOffset',
-        //   remote: {
-        //     ...DefaultRemoteInfo,
-        //     peerID: src,
-        //     userOffset: {
-        //       x: data.x,
-        //       z: data.z,
-        //     },
-        //     audioSrc: newAudioSrc,
-        //   },
-        // });
+        // テキストデータを送信
       });
 
       room.on('peerLeave', (peerID) => {
-        const remoteVideo: HTMLVideoElement = document.querySelector(
-          `[data-peer-id=${peerID}`
-        );
-        // remoteVideo.current.srcObject.getTracks().forEach((track) => track.stop());
-        remoteVideo.srcObject = null;
-        remoteVideo.remove();
-        // remotes = remotes.filter((v) => v.peerID !== peerID);
         console.log(`=== ${peerID} left ===`);
       });
 
       room.once('close', () => {
         console.log('=== You left ===');
-        // remotes = [];
       });
+
+      if (isMain) {
+        setMainRoom(room);
+      } else {
+        setSubRoom(room);
+      }
     };
-    initRoom('main');
-    initRoom('sub');
+    initRoom(true);
+    initRoom(false);
   };
 
   useEffect(() => {
@@ -231,18 +156,15 @@ const ChatRoom = (props: Props) => {
     joinTrigger();
   }, [mainLocalStream, subLocalStream]);
 
-  const handleLeave = () => {
-    setCookie('roomName', '');
-    setCookie('displayName', '');
-  };
+  // const handleLeave = () => {
+  //   setCookie('roomName', '');
+  //   setCookie('displayName', '');
+  // };
 
   const muteHandler = () => {
     const toggle: boolean = mainLocalStream.getAudioTracks()[0].enabled;
     mainLocalStream.getAudioTracks()[0].enabled = !toggle;
     subLocalStream.getAudioTracks()[0].enabled = toggle;
-    // console.warn('muteHandler//');
-    // console.log(mainLocalStream);
-    // console.warn('//muteHandler');
   };
 
   return (

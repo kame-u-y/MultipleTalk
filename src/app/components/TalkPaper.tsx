@@ -20,8 +20,13 @@ const TalkPaper = (props: TalkPaperProps) => {
 
   const handleChange = (e: any) => setInputComment(e.target.value);
   const handleSubmit = () => {
+    if (inputComment === '') {
+      console.log('comment is blank');
+      return;
+    }
     commentDispatch({ type: 'add', comment: inputComment });
     inputRef.current.querySelector('textarea').value = '';
+    setInputComment('');
   };
 
   return (

@@ -12,7 +12,7 @@ export const DefaultRemoteInfo: RemoteInfo = {
 };
 
 // このreducerでは結果オブジェクトのArrayを更新してるから引数もArray
-export function remoteReducer(
+function remoteReducer(
   state: Array<RemoteInfo>,
   action: {
     type: string;
@@ -37,3 +37,4 @@ export function remoteReducer(
     );
   }
 }
+export default remoteReducer;

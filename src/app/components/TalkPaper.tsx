@@ -8,69 +8,99 @@ import {
   Theme,
 } from '@material-ui/core';
 import React from 'react';
+// import { RouteComponentProps } from 'react-router-dom';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    subPaper: {
-      padding: '10px',
-      height: 'calc(33.3vh - 22px)',
-      position: 'relative',
-    },
-    mainPaper: {
-      padding: '10px',
-      height: 'calc(100vh - 22px)',
-      position: 'relative',
-    },
-    textfield: {
-      width: '100%',
-    },
-    buttonGrid: {
-      display: 'flex',
-      flexFlow: 'column',
-    },
-    button: {
-      float: 'right',
-      marginLeft: '15px',
-      minWidth: '55px',
-      maxWidth: '70px',
-      height: '40px',
-    },
-  })
-);
+interface TalkPaperProps {
+  // isMain: boolean;
+  talkNum: number;
+}
 
-const TalkPaper = (props: { isMain: Boolean }) => {
+// const DefaultTalkPaperProps = {
+//   isMain: true,
+//   talkNum: 1,
+// };
+
+const TalkPaper = (props: TalkPaperProps) => {
+  const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+      talkPaper: {
+        padding: '10px',
+        height: `calc(${100.0 / props.talkNum}vh - 22px)`,
+        // position: 'relative',
+      },
+      // mainPaper: {
+      //   padding: '10px',
+      //   height: 'calc(100vh - 22px)',
+      //   position: 'relative',
+      // },
+      textfield: {
+        width: '100%',
+      },
+      buttonGrid: {
+        display: 'flex',
+        flexFlow: 'column',
+      },
+      button: {
+        float: 'right',
+        marginLeft: '15px',
+        minWidth: '55px',
+        maxWidth: '70px',
+        height: '40px',
+      },
+      comment: {
+        color: 'gray',
+      },
+    })
+  );
   const classes = useStyles();
+
   const handleChange = (e: any) => {};
   return (
     <Paper
-      className={props.isMain ? classes.mainPaper : classes.subPaper}
+      // className={props.isMain ? classes.mainPaper : classes.subPaper}
+      className={classes.talkPaper}
       variant="outlined"
     >
       <Paper
         elevation={0}
         square
         style={{
-          height: `calc(${props.isMain ? '100vh' : '33.3vh'} - 22px - 40px)`,
-          //   backgroundColor: 'gray',
+          // height: `calc(${props.isMain ? '100vh' : '33.3vh'} - 22px - 40px)`,
+          height: `calc(${100 / props.talkNum}vh - 22px - 40px)`,
           overflow: 'scroll',
         }}
       >
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
-        <h1>hoge</h1>
+        <Grid
+          container
+          direction="column"
+          justify="flex-end"
+          alignItems="flex-start"
+        >
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+          <Grid item>
+            <h1 className={classes.comment}>hoge</h1>
+          </Grid>
+        </Grid>
       </Paper>
       <Grid container justify="center">
         <Grid item xs={11}>
@@ -100,10 +130,12 @@ const TalkPaper = (props: { isMain: Boolean }) => {
   );
 };
 
-export const MainTalk: React.FC = () => {
-  return <TalkPaper isMain={true} />;
+export const MainTalk = () => {
+  // return <TalkPaper isMain={true} />;
+  return <TalkPaper talkNum={1} />;
 };
 
-export const SubTalk: React.FC = () => {
-  return <TalkPaper isMain={false} />;
+export const SubTalk = (props: { talkNum: number }) => {
+  // return <TalkPaper isMain={false} talkNum={props.talkNum} />;
+  return <TalkPaper talkNum={props.talkNum} />;
 };

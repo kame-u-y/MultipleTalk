@@ -7,6 +7,7 @@ import { createStyles, Grid, makeStyles, Theme } from '@material-ui/core';
 import { remoteReducer } from './functions/remoteReducer';
 import { ChatRoomProps } from './interfaces/Props';
 import { MainTalk, SubTalk } from './components/TalkPaper';
+import { RemoteInfo } from './interfaces/RemoteInfo';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -39,7 +40,9 @@ const ChatRoom = (props: ChatRoomProps) => {
   const peer = props.peer;
   const [mainRoom, setMainRoom] = useState<MeshRoom>(null);
   const [subRoom, setSubRoom] = useState<MeshRoom>(null);
-  const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
+  // const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
+  const [mainRemotes, mainRemoteDispatch] = useReducer(remoteReducer, []);
+  const [subRemotes, subRemoteDispatch] = useReducer(remoteReducer, []);
 
   useEffect(() => {
     // resonanceAudioの初期化
@@ -114,19 +117,27 @@ const ChatRoom = (props: ChatRoomProps) => {
         audioElement.play();
         audioElement.muted = true;
 
-        remoteDispatch({
-          type: 'add',
-          remote: {
-            peerID: stream.peerId,
-            stream: stream,
-            imgSrc: '',
-            userOffset: {
-              x: 0,
-              z: 0,
-            },
-            audioSrc: audioSrc,
+        const newRemoteInfo = {
+          peerID: stream.peerId,
+          stream: stream,
+          imgSrc: '',
+          userOffset: {
+            x: 0,
+            z: 0,
           },
-        });
+          audioSrc: audioSrc,
+        };
+        if (isMain) {
+          mainRemoteDispatch({
+            type: 'add',
+            remote: newRemoteInfo,
+          });
+        } else {
+          subRemoteDispatch({
+            type: 'add',
+            remote: newRemoteInfo,
+          });
+        }
       });
 
       room.on('data', ({ data, src }) => {
@@ -171,7 +182,12 @@ const ChatRoom = (props: ChatRoomProps) => {
     <Grid container className={classes.root}>
       <Grid item xs={6}>
         <Grid container direction="column">
-          <Grid item>
+          {subRemotes.map((rem: RemoteInfo) => (
+            <Grid item>
+              <SubTalk talkNum={subRemotes.length} />
+            </Grid>
+          ))}
+          {/* <Grid item>
             <SubTalk />
           </Grid>
           <Grid item>
@@ -179,7 +195,7 @@ const ChatRoom = (props: ChatRoomProps) => {
           </Grid>
           <Grid item>
             <SubTalk />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
       <Grid item xs={6}>

@@ -187,15 +187,6 @@ const ChatRoom = (props: ChatRoomProps) => {
               <SubTalk talkNum={subRemotes.length} />
             </Grid>
           ))}
-          {/* <Grid item>
-            <SubTalk />
-          </Grid>
-          <Grid item>
-            <SubTalk />
-          </Grid>
-          <Grid item>
-            <SubTalk />
-          </Grid> */}
         </Grid>
       </Grid>
       <Grid item xs={6}>

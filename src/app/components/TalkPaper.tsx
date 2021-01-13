@@ -7,18 +7,24 @@ import {
   TextField,
   Theme,
 } from '@material-ui/core';
-import React from 'react';
-// import { RouteComponentProps } from 'react-router-dom';
+import React, { ChangeEvent, useReducer, useRef, useState } from 'react';
+import ReactDOM from 'react-dom';
 
-interface TalkPaperProps {
-  // isMain: boolean;
-  talkNum: number;
+function commentReducer(
+  state: Array<string>,
+  action: {
+    type: string;
+    comment: string;
+  }
+): Array<string> {
+  if (action.type === 'add') {
+    return [...state, action.comment];
+  }
 }
 
-// const DefaultTalkPaperProps = {
-//   isMain: true,
-//   talkNum: 1,
-// };
+interface TalkPaperProps {
+  talkNum: number;
+}
 
 const TalkPaper = (props: TalkPaperProps) => {
   const useStyles = makeStyles((theme: Theme) =>
@@ -33,7 +39,7 @@ const TalkPaper = (props: TalkPaperProps) => {
       //   height: 'calc(100vh - 22px)',
       //   position: 'relative',
       // },
-      textfield: {
+      textField: {
         width: '100%',
       },
       buttonGrid: {
@@ -53,8 +59,19 @@ const TalkPaper = (props: TalkPaperProps) => {
     })
   );
   const classes = useStyles();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [inputComment, setInputComment] = useState('');
+  const [comments, commentDispatch] = useReducer(commentReducer, []);
 
-  const handleChange = (e: any) => {};
+  const handleChange = (e: any) => setInputComment(e.target.value);
+  const handleSubmit = () => {
+    commentDispatch({ type: 'add', comment: inputComment });
+    inputRef.current.querySelector('textarea').value = '';
+    // inputRef.current.value = '';
+    // inputRef.current.value;
+    // ReactDOM.findDOMNode(inputRef).value = 'MYVALUE';
+  };
+
   return (
     <Paper
       // className={props.isMain ? classes.mainPaper : classes.subPaper}
@@ -76,42 +93,24 @@ const TalkPaper = (props: TalkPaperProps) => {
           justify="flex-end"
           alignItems="flex-start"
         >
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
-          <Grid item>
-            <h1 className={classes.comment}>hoge</h1>
-          </Grid>
+          {comments.map((com: string, id: number) => (
+            <Grid item key={id}>
+              <h1 className={classes.comment}>{com}</h1>
+            </Grid>
+          ))}
         </Grid>
       </Paper>
       <Grid container justify="center">
         <Grid item xs={11}>
           <TextField
-            className={classes.textfield}
-            id="room-name"
+            ref={inputRef}
+            className={classes.textField}
+            // id="room-name"
             variant="outlined"
             multiline
             rowsMax={5}
             size="small"
-            onChange={(e: any) => handleChange(e)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
           />
         </Grid>
         <Grid className={classes.buttonGrid} item xs={1}>
@@ -120,7 +119,8 @@ const TalkPaper = (props: TalkPaperProps) => {
             className={classes.button}
             variant="contained"
             color="primary"
-            type="submit"
+            // type="submit"
+            onClick={() => handleSubmit()}
           >
             ＞
           </Button>

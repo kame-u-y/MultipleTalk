@@ -8,57 +8,12 @@ import {
   Theme,
 } from '@material-ui/core';
 import React, { ChangeEvent, useReducer, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
-
-function commentReducer(
-  state: Array<string>,
-  action: {
-    type: string;
-    comment: string;
-  }
-): Array<string> {
-  if (action.type === 'add') {
-    return [...state, action.comment];
-  }
-}
-
-interface TalkPaperProps {
-  talkNum: number;
-}
+import commentReducer from '../reducers/commentReducer';
+import TalkPaperProps from '../interfaces/TalkPaperProps';
+import useTalkPaperStyles from '../styles/talkPaperStyles';
 
 const TalkPaper = (props: TalkPaperProps) => {
-  const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-      talkPaper: {
-        padding: '10px',
-        height: `calc(${100.0 / props.talkNum}vh - 22px)`,
-        // position: 'relative',
-      },
-      // mainPaper: {
-      //   padding: '10px',
-      //   height: 'calc(100vh - 22px)',
-      //   position: 'relative',
-      // },
-      textField: {
-        width: '100%',
-      },
-      buttonGrid: {
-        display: 'flex',
-        flexFlow: 'column',
-      },
-      button: {
-        float: 'right',
-        marginLeft: '15px',
-        minWidth: '55px',
-        maxWidth: '70px',
-        height: '40px',
-      },
-      comment: {
-        color: 'gray',
-      },
-    })
-  );
-  const classes = useStyles();
+  const classes = useTalkPaperStyles(props.talkNum);
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputComment, setInputComment] = useState('');
   const [comments, commentDispatch] = useReducer(commentReducer, []);
@@ -67,22 +22,14 @@ const TalkPaper = (props: TalkPaperProps) => {
   const handleSubmit = () => {
     commentDispatch({ type: 'add', comment: inputComment });
     inputRef.current.querySelector('textarea').value = '';
-    // inputRef.current.value = '';
-    // inputRef.current.value;
-    // ReactDOM.findDOMNode(inputRef).value = 'MYVALUE';
   };
 
   return (
-    <Paper
-      // className={props.isMain ? classes.mainPaper : classes.subPaper}
-      className={classes.talkPaper}
-      variant="outlined"
-    >
+    <Paper className={classes.talkPaper} variant="outlined">
       <Paper
         elevation={0}
         square
         style={{
-          // height: `calc(${props.isMain ? '100vh' : '33.3vh'} - 22px - 40px)`,
           height: `calc(${100 / props.talkNum}vh - 22px - 40px)`,
           overflow: 'scroll',
         }}
@@ -105,7 +52,6 @@ const TalkPaper = (props: TalkPaperProps) => {
           <TextField
             ref={inputRef}
             className={classes.textField}
-            // id="room-name"
             variant="outlined"
             multiline
             rowsMax={5}
@@ -119,7 +65,6 @@ const TalkPaper = (props: TalkPaperProps) => {
             className={classes.button}
             variant="contained"
             color="primary"
-            // type="submit"
             onClick={() => handleSubmit()}
           >
             ＞
@@ -131,11 +76,9 @@ const TalkPaper = (props: TalkPaperProps) => {
 };
 
 export const MainTalk = () => {
-  // return <TalkPaper isMain={true} />;
   return <TalkPaper talkNum={1} />;
 };
 
-export const SubTalk = (props: { talkNum: number }) => {
-  // return <TalkPaper isMain={false} talkNum={props.talkNum} />;
+export const SubTalk = (props: TalkPaperProps) => {
   return <TalkPaper talkNum={props.talkNum} />;
 };

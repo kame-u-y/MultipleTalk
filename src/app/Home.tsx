@@ -3,35 +3,11 @@ import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import { Button, Grid, Paper, TextField, Typography } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import { useCookies } from 'react-cookie';
+import useHomeStyles from './styles/homeStyles';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    title: {
-      textAlign: 'center',
-      color: 'dimgray',
-    },
-    root: {
-      flexGrow: 1,
-      height: '100vh',
-    },
-    paper: {
-      padding: theme.spacing(2),
-      margin: 'auto',
-      maxWidth: 400,
-    },
-    textfield: {
-      width: '100%',
-    },
-    button: {
-      float: 'right',
-    },
-  })
-);
-
-const Home: React.FC = (props) => {
-  const classes = useStyles();
+const Home: React.FC = () => {
+  const classes = useHomeStyles();
   const [cookies, setCookie] = useCookies(['roomName', 'displayName']);
   const history = useHistory();
   const [roomName, setRoomName] = useState('');

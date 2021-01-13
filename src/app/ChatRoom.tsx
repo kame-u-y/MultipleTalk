@@ -4,23 +4,11 @@ import { useCookies } from 'react-cookie';
 import { RoomStream, MeshRoom } from 'skyway-js';
 import { ResonanceAudio } from 'resonance-audio';
 import { createStyles, Grid, makeStyles, Theme } from '@material-ui/core';
-import { remoteReducer } from './functions/remoteReducer';
+import { remoteReducer } from './reducers/remoteReducer';
 import { ChatRoomProps } from './interfaces/Props';
 import { MainTalk, SubTalk } from './components/TalkPaper';
 import { RemoteInfo } from './interfaces/RemoteInfo';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    title: {
-      textAlign: 'center',
-      color: 'dimgray',
-    },
-    root: {
-      // flexGrow: 1,
-      height: '100vh',
-    },
-  })
-);
+import useChatRoomStyles from './styles/chatRoomStyles';
 
 const ChatRoom = (props: ChatRoomProps) => {
   if (!props.location.state) {
@@ -28,7 +16,7 @@ const ChatRoom = (props: ChatRoomProps) => {
   }
 
   const [cookies, setCookie] = useCookies(['roomName', 'displayName']);
-  const classes = useStyles();
+  const classes = useChatRoomStyles();
 
   const [audioCtx, setAudioCtx] = useState<AudioContext>(null);
   const [resonanceAudio, setResonanceAudio] = useState<ResonanceAudio>(null);

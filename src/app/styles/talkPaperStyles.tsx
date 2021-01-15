@@ -1,6 +1,6 @@
 import { createStyles, makeStyles } from '@material-ui/core';
 
-const useTalkPaperStyles = makeStyles((talkNum: number) =>
+export const useTalkPaperStyles = makeStyles((talkNum: number) =>
   createStyles({
     talkPaper: {
       padding: '10px',
@@ -25,4 +25,3 @@ const useTalkPaperStyles = makeStyles((talkNum: number) =>
     },
   })
 );
-export default useTalkPaperStyles;

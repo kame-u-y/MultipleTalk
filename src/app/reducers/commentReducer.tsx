@@ -1,4 +1,4 @@
-function commentReducer(
+export function commentReducer(
   state: Array<string>,
   action: {
     type: string;
@@ -9,5 +9,3 @@ function commentReducer(
     return [...state, action.comment];
   }
 }
-
-export default commentReducer;

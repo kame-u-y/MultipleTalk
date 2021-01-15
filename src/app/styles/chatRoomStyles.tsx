@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 
-const useChatRoomStyles = makeStyles((theme: Theme) =>
+export const useChatRoomStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       textAlign: 'center',
@@ -12,5 +12,3 @@ const useChatRoomStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-export default useChatRoomStyles;

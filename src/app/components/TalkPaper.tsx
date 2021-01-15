@@ -8,9 +8,9 @@ import {
   Theme,
 } from '@material-ui/core';
 import React, { ChangeEvent, useReducer, useRef, useState } from 'react';
-import commentReducer from '../reducers/commentReducer';
-import TalkPaperProps from '../interfaces/TalkPaperProps';
-import useTalkPaperStyles from '../styles/talkPaperStyles';
+import { commentReducer } from '../reducers/commentReducer';
+import { TalkPaperProps } from '../interfaces/TalkPaperProps';
+import { useTalkPaperStyles } from '../styles/talkPaperStyles';
 
 const TalkPaper = (props: TalkPaperProps) => {
   const classes = useTalkPaperStyles(props.talkNum);
@@ -41,9 +41,9 @@ const TalkPaper = (props: TalkPaperProps) => {
       >
         <Grid
           container
-          direction="column"
-          justify="flex-end"
-          alignItems="flex-start"
+          // direction="column"
+          // justify="flex-end"
+          // alignItems="flex-start"
         >
           {comments.map((com: string, id: number) => (
             <Grid item key={id}>

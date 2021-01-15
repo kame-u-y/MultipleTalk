@@ -1,6 +1,6 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 
-const useHomeStyles = makeStyles((theme: Theme) =>
+export const useHomeStyles = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       textAlign: 'center',
@@ -23,5 +23,3 @@ const useHomeStyles = makeStyles((theme: Theme) =>
     },
   })
 );
-
-export default useHomeStyles;

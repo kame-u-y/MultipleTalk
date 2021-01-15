@@ -1,4 +1,3 @@
-interface TalkPaperProps {
+export interface TalkPaperProps {
   talkNum: number;
 }
-export default TalkPaperProps;

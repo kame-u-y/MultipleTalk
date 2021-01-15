@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 
 import { Button, Grid, Paper, TextField, Typography } from '@material-ui/core';
 import { useCookies } from 'react-cookie';
-import useHomeStyles from './styles/homeStyles';
+import { useHomeStyles } from './styles/homeStyles';
 
-const Home: React.FC = () => {
+export const Home: React.FC = () => {
   const classes = useHomeStyles();
   const [cookies, setCookie] = useCookies(['roomName', 'displayName']);
   const history = useHistory();
@@ -88,5 +88,3 @@ const Home: React.FC = () => {
     </Grid>
   );
 };
-
-export default Home;

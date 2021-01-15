@@ -2,8 +2,8 @@ import React, { useMemo } from 'react';
 import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 import Peer from 'skyway-js';
 import { GivenProps } from './interfaces/Props';
-import Home from './Home';
-import ChatRoom from './ChatRoom';
+import { Home } from './Home';
+import { ChatRoom } from './ChatRoom';
 
 const App: React.FC = () => {
   const peer: Peer = useMemo(

@@ -21,6 +21,7 @@ export const streamReducer = (
   } else if (action.type === 'setMute') {
     return state.map((stream: MediaStream, id: number) => {
       const unmute = id === action.unmuteId;
+      console.log(`${id} ${unmute}`);
       stream.getAudioTracks()[0].enabled = unmute ? true : false;
       return stream;
     });

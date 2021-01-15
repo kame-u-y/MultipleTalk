@@ -101,6 +101,7 @@ export const ChatRoom = (props: ChatRoomProps) => {
     if (joinParams.isMain) {
       setMainLocalStream(newLocalStream);
     } else {
+      console.log('add subLocalStream');
       subLocalStreamDispatch({
         type: 'add',
         stream: newLocalStream,
@@ -109,13 +110,58 @@ export const ChatRoom = (props: ChatRoomProps) => {
 
     room.once('open', () => {
       console.log('=== You joined ===');
-      room.send({
-        type: 'NEW_JOIN',
-      });
-      console.log(Object.keys(room.connections));
-      Object.keys(room.connections).map((peerId) => {
-        joinTrigger({ isMain: false, firstId: peer.id, secondId: peerId });
-      });
+
+      // const dataConnection = peer.connect(src);
+      // dataConnection.on('open', () => {
+      //   const data = {
+      //     type: 'RES_NEW_JOIN',
+      //   };
+      //   dataConnection.send(data);
+      // });
+      // dataConnection.close();
+      // peer.on('connection', (dataConnection) => {
+      //   dataConnection.on('data', ({ res }) => {
+      //     console.log(`${res}`);
+      //     console.log(dataConnection.remoteId);
+      //     joinTrigger({
+      //       isMain: false,
+      //       firstId: peer.id,
+      //       secondId: dataConnection.remoteId,
+      //     });
+      //     dataConnection.close();
+      //   });
+      // });
+      if (room.name === `${props.location.state.roomName}_main`) {
+        room.send({
+          msg: 'REQ_NEW_JOIN',
+        });
+      }
+      // console.log('hoge');
+      // const roomConnections = room.connections;
+      // console.log(roomConnections);
+      // console.log(roomConnections.length);
+      // console.log(Object.keys(roomConnections));
+      // console.log(typeof roomConnections);
+      // console.log(roomConnections[0]);
+      // console.log(mainRemotes);
+      // console.log('hoge');
+      // console.log(peer.getConnection());
+      // console.log(roomConnections);
+      // Object.entries(roomConnections).forEach(([key, value]) => {
+      //   console.log(key, value);
+      // });
+      // Object.keys(roomConnections).forEach((peerId) => {
+      // });
+
+      // joinTrigger({
+      //   isMain: false,
+      //   firstId: peer.id,
+      //   secondId: peerId,
+      // });
+
+      // for (let v in roomConnections) {
+      //   console.log(v);
+      // }
     });
 
     room.on('peerJoin', (peerId) => {
@@ -167,18 +213,25 @@ export const ChatRoom = (props: ChatRoomProps) => {
     room.on('data', ({ data, src }) => {
       // テキストデータを送信
       console.log(data);
-      if (data.req === 'NEW_JOIN') {
+      if (data.msg === 'REQ_NEW_JOIN') {
         // 返信側です
         // new remote roomをやるぞ
-        // initRoom(false, stream.peerId);
+        joinTrigger({ isMain: false, firstId: src, secondId: peer.id });
         // const dataConnection = peer.connect(src);
         // dataConnection.on('open', () => {
-        // const data = {
-        //   type: 'RES_NEW_JOIN',
-        //   peerId: ,
-        // };
+        const data = {
+          msg: 'RES_NEW_JOIN',
+          to: src,
+        };
+        room.send(data);
         // });
-        joinTrigger({ isMain: false, firstId: src, secondId: peer.id });
+        // dataConnection.on('error', () => {
+        //   console.warn('error occured');
+        // });
+      } else if (data.msg === 'RES_NEW_JOIN') {
+        if (data.to === peer.id) {
+          joinTrigger({ isMain: false, firstId: peer.id, secondId: src });
+        }
       }
     });
 

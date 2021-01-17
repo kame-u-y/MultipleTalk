@@ -36,6 +36,7 @@ export const MainTalk = (props: MainTalkProps) => {
         elevation={0}
         square
         style={{
+          margin: '10px 10px 0 10px',
           height: `calc(100vh - 22px - 40px - 116.75px - 20px)`,
           overflow: 'scroll',
         }}
@@ -68,8 +69,15 @@ export const MainTalk = (props: MainTalkProps) => {
           ></input>
         </Grid>
       </Grid>
-      <Grid container justify="center">
-        <Grid item xs={11}>
+      <Grid
+        container
+        justify="center"
+        style={{
+          padding: '0 10px 10px 10px',
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+        }}
+      >
+        <Grid item xs={10}>
           <TextField
             ref={inputRef}
             className={classes.textField}
@@ -80,10 +88,10 @@ export const MainTalk = (props: MainTalkProps) => {
             onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
           />
         </Grid>
-        <Grid className={classes.buttonGrid} item xs={1}>
+        <Grid className={classes.buttonGrid} item xs={2}>
           <div style={{ flex: 1 }}></div>
           <Button
-            className={classes.button}
+            className={classes.mainButton}
             variant="contained"
             color="primary"
             onClick={(e) => {
@@ -125,6 +133,7 @@ export const SubTalk = (props: SubTalkProps) => {
             style={{
               height: `calc(${100 / props.talkNum}vh - 22px - 40px)`,
               overflow: 'scroll',
+              padding: '10px 10px 0 10px',
             }}
           >
             <Grid container direction="column">
@@ -135,8 +144,14 @@ export const SubTalk = (props: SubTalkProps) => {
               ))}
             </Grid>
           </Paper>
-          <Grid container justify="center">
-            <Grid item xs={11}>
+          <Grid
+            container
+            justify="center"
+            style={{
+              padding: '0 0 10px 10px',
+            }}
+          >
+            <Grid item xs={10}>
               <TextField
                 ref={inputRef}
                 className={classes.textField}
@@ -147,10 +162,10 @@ export const SubTalk = (props: SubTalkProps) => {
                 onChange={(e: ChangeEvent<HTMLInputElement>) => handleChange(e)}
               />
             </Grid>
-            <Grid className={classes.buttonGrid} item xs={1}>
+            <Grid className={classes.buttonGrid} item xs={2}>
               <div style={{ flex: 1 }}></div>
               <Button
-                className={classes.button}
+                className={classes.subButton}
                 variant="contained"
                 color="primary"
                 onClick={(e) => {

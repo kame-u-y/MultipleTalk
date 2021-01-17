@@ -207,7 +207,7 @@ export const ChatRoom = (props: ChatRoomProps) => {
                 talkNum={array.length}
                 unmuteColor={unmuteId === id}
                 unmuteHandler={() => {
-                  setUnmuteId(id);
+                  setUnmuteId(unmuteId !== id ? id : -999);
                   unmuteHandler(id);
                 }}
               />
@@ -219,7 +219,7 @@ export const ChatRoom = (props: ChatRoomProps) => {
         <MainTalk
           unmuteColor={unmuteId === -1}
           unmuteHandler={() => {
-            setUnmuteId(-1);
+            setUnmuteId(unmuteId !== -1 ? -1 : -999);
             unmuteHandler();
           }}
         />

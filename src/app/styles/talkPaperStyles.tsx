@@ -20,6 +20,9 @@ export const useTalkPaperStyles = makeStyles((talkNum: number) =>
     },
     unmuteButton: {
       maxWidth: '112px',
+      '&:focus': {
+        outline: 'none',
+      },
     },
     textField: {
       width: '100%',

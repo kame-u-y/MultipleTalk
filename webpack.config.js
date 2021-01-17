@@ -30,7 +30,7 @@ module.exports = {
           options: {
             name: '[name].[ext]',
             outputPath: 'img/',
-            publicPath: (path) => './dist/img/' + path,
+            publicPath: (path) => './img/' + path,
           },
         },
       },
@@ -46,6 +46,7 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     contentBase: './dist',
+    // contentBase: '.',
     hot: true,
   },
 };

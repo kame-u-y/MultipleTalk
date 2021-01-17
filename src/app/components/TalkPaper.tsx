@@ -53,7 +53,7 @@ export const MainTalk = (props: MainTalkProps) => {
         direction="column"
         justify="center"
         alignItems="center"
-        xs={12}
+        // xs={12}
         className={classes.mainUnmuteGrid}
       >
         <Grid item xs={2}>

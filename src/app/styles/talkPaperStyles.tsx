@@ -6,7 +6,21 @@ export const useTalkPaperStyles = makeStyles((talkNum: number) =>
       // padding: '10px',
       // height: `calc(${100.0 / talkNum}vh - 22px)`,
       // position: 'relative',
-      borderLeft: '2px solid rgba(0, 0, 0, 0.12)',
+      border: '2px solid rgba(0, 0, 0, 0.7)',
+    },
+    mainTitleGrid: {
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      height: '50px',
+    },
+    subTitleGrid: {
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      height: '50px',
+    },
+    title: {
+      color: 'white',
+      textAlign: 'center',
+      margin: '0',
+      height: '100%',
     },
     mainUnmuteGrid: {
       borderTop: '2px solid rgba(0, 0, 0, 0.02)',
@@ -47,8 +61,22 @@ export const useTalkPaperStyles = makeStyles((talkNum: number) =>
       maxWidth: '115px',
       height: '40px',
     },
-    comment: {
+    // msgGrid: {
+    //   margin: '10px 0',
+    // },
+    msg: {
       color: 'gray',
+      fontSize: '32px',
+      margin: '10px',
+      padding: '5px 15px',
+      border: '2px solid rgba(0, 0, 0, 0.12)',
+      borderRadius: '10px',
+    },
+    sentMsg: {
+      float: 'right',
+    },
+    recievedMsg: {
+      float: 'left',
     },
   })
 );

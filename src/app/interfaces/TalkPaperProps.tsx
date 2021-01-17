@@ -1,15 +1,15 @@
-export interface MainTalkProps {
+import { MessageInfo } from './MessageInfo';
+
+interface TalkPaperProps {
   unmuteColor: boolean;
+  title: string;
+  messages: Array<MessageInfo>;
   unmuteHandler: () => void;
+  sendMessageHandler: (msg: string) => void;
 }
 
-export interface SubTalkProps {
+export interface MainTalkProps extends TalkPaperProps {}
+
+export interface SubTalkProps extends TalkPaperProps {
   talkNum: number;
-  unmuteColor: boolean;
-  unmuteHandler: () => void;
 }
-
-// export interface TalkPaperProps {
-//   talkNum: number;
-//   unmuteHandler: () => void;
-// }

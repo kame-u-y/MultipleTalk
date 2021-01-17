@@ -6,10 +6,11 @@ import { ResonanceAudio } from 'resonance-audio';
 import { Grid } from '@material-ui/core';
 import { MainTalk, SubTalk } from './components/TalkPaper';
 import { ChatRoomProps } from './interfaces/Props';
-import { RemoteInfo } from './interfaces/RemoteInfo';
 import { remoteReducer } from './reducers/remoteReducer';
 import { streamReducer } from './reducers/streamReducer';
 import { useChatRoomStyles } from './styles/chatRoomStyles';
+import { messageReducer } from './reducers/messageReducer';
+import { subRoomReducer } from './reducers/subRoomReducer';
 
 export const ChatRoom = (props: ChatRoomProps) => {
   if (!props.location.state) {
@@ -24,7 +25,6 @@ export const ChatRoom = (props: ChatRoomProps) => {
 
   const [localStream, setLocalStream] = useState<MediaStream>(null);
   const [mainLocalStream, setMainLocalStream] = useState<MediaStream>(null);
-  // const [subLocalStream, setSubLocalStream] = useState<MediaStream>(null);
   const [subLocalStreams, subLocalStreamDispatch] = useReducer(
     streamReducer,
     []
@@ -32,11 +32,11 @@ export const ChatRoom = (props: ChatRoomProps) => {
 
   const peer = useMemo(() => props.peer, []);
   const [mainRoom, setMainRoom] = useState<MeshRoom>(null);
-  const [subRoom, setSubRoom] = useState<MeshRoom>(null);
-  // const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
-  const [mainRemotes, mainRemoteDispatch] = useReducer(remoteReducer, []);
-  const [subRemotes, subRemoteDispatch] = useReducer(remoteReducer, []);
+  const [subRooms, subRoomDispatch] = useReducer(subRoomReducer, {});
+  const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
   const [currentUnmuteId, setCurrentUnmuteId] = useState(-1);
+
+  const [messages, messageDispatch] = useReducer(messageReducer, {});
 
   useEffect(() => {
     // resonanceAudioの初期化
@@ -64,7 +64,12 @@ export const ChatRoom = (props: ChatRoomProps) => {
   const joinTrigger = (
     joinParams:
       | { isMain: true }
-      | { isMain: false; firstId: string; secondId: string }
+      | {
+          isMain: false;
+          firstId: string;
+          secondId: string;
+          partnerName: string;
+        }
   ) => {
     if (!audioCtx) {
       alert('AudioContext is not initialized');
@@ -107,7 +112,8 @@ export const ChatRoom = (props: ChatRoomProps) => {
       // SubRoomにお互い入るためのやりとり
       if (room.name === `${props.location.state.roomName}_main`) {
         room.send({
-          msg: 'REQ_NEW_JOIN',
+          type: 'REQ_NEW_JOIN',
+          userName: props.location.state.displayName,
         });
       }
     });
@@ -131,42 +137,48 @@ export const ChatRoom = (props: ChatRoomProps) => {
       audioElement.play();
       audioElement.muted = true;
 
-      const newRemoteInfo = {
-        peerID: stream.peerId,
-        stream: stream,
-        imgSrc: '',
-        userOffset: {
-          x: 0,
-          z: 0,
-        },
-        audioSrc: audioSrc,
-      };
-
-      if (isMain) {
-        mainRemoteDispatch({
+      if (joinParams.isMain === false) {
+        console.log(joinParams.partnerName);
+        remoteDispatch({
           type: 'add',
-          remote: newRemoteInfo,
-        });
-      } else {
-        subRemoteDispatch({
-          type: 'add',
-          remote: newRemoteInfo,
+          payload: {
+            peerId: stream.peerId,
+            roomName: room.name,
+            userName: joinParams.partnerName,
+          },
         });
       }
     });
 
     room.on('data', ({ data, src }) => {
       // SubRoomにお互い入るためのやりとり
-      if (data.msg === 'REQ_NEW_JOIN') {
-        joinTrigger({ isMain: false, firstId: src, secondId: peer.id });
-        room.send({
-          msg: 'RES_NEW_JOIN',
-          to: src,
+      if (data.type === 'REQ_NEW_JOIN') {
+        joinTrigger({
+          isMain: false,
+          firstId: src,
+          secondId: peer.id,
+          partnerName: data.userName,
         });
-      } else if (data.msg === 'RES_NEW_JOIN') {
+        room.send({
+          type: 'RES_NEW_JOIN',
+          to: src,
+          userName: props.location.state.displayName,
+        });
+      } else if (data.type === 'RES_NEW_JOIN') {
         if (data.to === peer.id) {
-          joinTrigger({ isMain: false, firstId: peer.id, secondId: src });
+          joinTrigger({
+            isMain: false,
+            firstId: peer.id,
+            secondId: src,
+            partnerName: data.userName,
+          });
         }
+      } else if (data.type === 'MESSAGE') {
+        // {room, id, msg}
+        messageDispatch({
+          type: 'add',
+          payload: { room: room.name, msg: data.msg, fromMyself: false },
+        });
       }
     });
 
@@ -181,7 +193,13 @@ export const ChatRoom = (props: ChatRoomProps) => {
     if (joinParams.isMain) {
       setMainRoom(room);
     } else {
-      setSubRoom(room);
+      subRoomDispatch({
+        type: 'add',
+        payload: {
+          roomName: room.name,
+          room: room,
+        },
+      });
     }
   };
 
@@ -203,18 +221,39 @@ export const ChatRoom = (props: ChatRoomProps) => {
     setCurrentUnmuteId(currentUnmuteId !== unmuteId ? unmuteId : -999);
   };
 
+  const sendMessageHandler = (
+    isMain: boolean,
+    roomName: string,
+    msg: string
+  ) => {
+    const room = isMain ? mainRoom : subRooms[roomName];
+    room.send({
+      type: 'MESSAGE',
+      msg: msg,
+    });
+    messageDispatch({
+      type: 'add',
+      payload: { room: roomName, msg: msg, fromMyself: true },
+    });
+  };
+
   return (
     <Grid container className={classes.root}>
       <Grid item xs={6}>
         <Grid container direction="column">
-          {mainRemotes.map((rem: RemoteInfo, id: number, array) => (
+          {remotes.map((remo, id: number, array) => (
             <Grid item key={id}>
               <SubTalk
                 talkNum={array.length}
                 unmuteColor={currentUnmuteId === id}
-                unmuteHandler={() => {
-                  unmuteHandler(id);
-                }}
+                title={remo.userName}
+                messages={
+                  messages[remo.roomName] ? messages[remo.roomName] : []
+                }
+                unmuteHandler={() => unmuteHandler(id)}
+                sendMessageHandler={(msg: string) =>
+                  sendMessageHandler(false, remo.roomName, msg)
+                }
               />
             </Grid>
           ))}
@@ -223,9 +262,20 @@ export const ChatRoom = (props: ChatRoomProps) => {
       <Grid item xs={6}>
         <MainTalk
           unmuteColor={currentUnmuteId === -1}
+          title={'Main Talk'}
+          messages={
+            mainRoom
+              ? messages[mainRoom.name]
+                ? messages[mainRoom.name]
+                : []
+              : []
+          }
           unmuteHandler={() => {
             unmuteHandler(-1);
           }}
+          sendMessageHandler={(msg: string) =>
+            sendMessageHandler(true, mainRoom.name, msg)
+          }
         />
       </Grid>
       {/* <Link to="/" onClick={() => handleLeave()}>

@@ -36,7 +36,7 @@ export const ChatRoom = (props: ChatRoomProps) => {
   // const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
   const [mainRemotes, mainRemoteDispatch] = useReducer(remoteReducer, []);
   const [subRemotes, subRemoteDispatch] = useReducer(remoteReducer, []);
-  const [unmuteId, setUnmuteId] = useState(-1);
+  const [currentUnmuteId, setCurrentUnmuteId] = useState(-1);
 
   useEffect(() => {
     // resonanceAudioの初期化
@@ -77,6 +77,9 @@ export const ChatRoom = (props: ChatRoomProps) => {
 
     const newLocalStream = new MediaStream();
     newLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
+    newLocalStream.getAudioTracks()[0].enabled = joinParams.isMain
+      ? true
+      : false;
 
     const attachedName =
       joinParams.isMain === true
@@ -187,14 +190,17 @@ export const ChatRoom = (props: ChatRoomProps) => {
     joinTrigger({ isMain: true });
   }, [localStream]);
 
-  const unmuteHandler = (unmuteSubId: number = -1) => {
+  const unmuteHandler = (unmuteId: number = -1) => {
     console.log('unmuteHandler');
-    const mainUnmute = unmuteSubId === -1;
-    mainLocalStream.getAudioTracks()[0].enabled = mainUnmute;
+    const currentMainState = mainLocalStream.getAudioTracks()[0].enabled;
+    const isMainUnmute = !currentMainState && unmuteId === -1;
+    mainLocalStream.getAudioTracks()[0].enabled = isMainUnmute;
+
     subLocalStreamDispatch({
       type: 'setMute',
-      unmuteId: unmuteSubId,
+      unmuteId: unmuteId,
     });
+    setCurrentUnmuteId(currentUnmuteId !== unmuteId ? unmuteId : -999);
   };
 
   return (
@@ -205,9 +211,8 @@ export const ChatRoom = (props: ChatRoomProps) => {
             <Grid item key={id}>
               <SubTalk
                 talkNum={array.length}
-                unmuteColor={unmuteId === id}
+                unmuteColor={currentUnmuteId === id}
                 unmuteHandler={() => {
-                  setUnmuteId(unmuteId !== id ? id : -999);
                   unmuteHandler(id);
                 }}
               />
@@ -217,10 +222,9 @@ export const ChatRoom = (props: ChatRoomProps) => {
       </Grid>
       <Grid item xs={6}>
         <MainTalk
-          unmuteColor={unmuteId === -1}
+          unmuteColor={currentUnmuteId === -1}
           unmuteHandler={() => {
-            setUnmuteId(unmuteId !== -1 ? -1 : -999);
-            unmuteHandler();
+            unmuteHandler(-1);
           }}
         />
       </Grid>

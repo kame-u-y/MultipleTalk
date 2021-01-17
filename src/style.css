@@ -21,7 +21,7 @@ h1 {
 
 .user-icon {
   position: absolute;
-  border: solid black 1px;
+  border: 2px solid black;
 }
 
 .user-icon > img {

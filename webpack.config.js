@@ -22,6 +22,18 @@ module.exports = {
           'postcss-loader',
         ],
       },
+      {
+        // image
+        test: /\.(jpg|JPG|jpeg|png|PING|gif|mp3|svg|ttf|woff2|woff|eot)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'img',
+            publicPath: (path) => '/img/' + path,
+          },
+        },
+      },
     ],
   },
   resolve: {

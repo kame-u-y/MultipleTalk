@@ -9,16 +9,10 @@ import {
 } from '@material-ui/core';
 import React, { ChangeEvent, useReducer, useRef, useState } from 'react';
 import { commentReducer } from '../reducers/commentReducer';
-import {
-  MainTalkProps,
-  SubTalkProps,
-  TalkPaperProps,
-} from '../interfaces/TalkPaperProps';
+import { MainTalkProps, SubTalkProps } from '../interfaces/TalkPaperProps';
 import { useTalkPaperStyles } from '../styles/talkPaperStyles';
 import muteMic from '../images/mic_mute.png';
 import unmuteMic from '../images/mic_unmute.png';
-
-const TalkPaper = (props: TalkPaperProps) => {};
 
 export const MainTalk = (props: MainTalkProps) => {
   const classes = useTalkPaperStyles(1);
@@ -38,8 +32,6 @@ export const MainTalk = (props: MainTalkProps) => {
   };
   return (
     <Paper className={classes.talkPaper} variant="outlined">
-      {/* <Grid container>
-        <Grid item xs={8}> */}
       <Paper
         elevation={0}
         square
@@ -48,12 +40,7 @@ export const MainTalk = (props: MainTalkProps) => {
           overflow: 'scroll',
         }}
       >
-        <Grid
-          container
-          direction="column"
-          // justify="flex-end"
-          // alignItems="flex-start"
-        >
+        <Grid container direction="column">
           {comments.map((com: string, id: number) => (
             <Grid item key={id}>
               <h1 className={classes.comment}>{com}</h1>
@@ -73,7 +60,7 @@ export const MainTalk = (props: MainTalkProps) => {
           <input
             className={classes.unmuteButton}
             type="image"
-            src={muteMic}
+            src={props.unmuteColor ? unmuteMic : muteMic}
             onClick={(ev: any) => {
               ev.target.src = unmuteMic;
               props.unmuteHandler();
@@ -107,8 +94,6 @@ export const MainTalk = (props: MainTalkProps) => {
           </Button>
         </Grid>
       </Grid>
-      {/* </Grid>
-      </Grid> */}
     </Paper>
   );
 };
@@ -142,12 +127,7 @@ export const SubTalk = (props: SubTalkProps) => {
               overflow: 'scroll',
             }}
           >
-            <Grid
-              container
-              direction="column"
-              // justify="flex-end"
-              // alignItems="flex-start"
-            >
+            <Grid container direction="column">
               {comments.map((com: string, id: number) => (
                 <Grid item key={id}>
                   <h1 className={classes.comment}>{com}</h1>
@@ -195,9 +175,9 @@ export const SubTalk = (props: SubTalkProps) => {
             <input
               className={classes.unmuteButton}
               type="image"
-              src={muteMic}
+              src={props.unmuteColor ? unmuteMic : muteMic}
               onClick={(ev: any) => {
-                ev.target.src = unmuteMic;
+                // ev.target.src = unmuteMic;
                 props.unmuteHandler();
               }}
             ></input>

@@ -36,6 +36,7 @@ export const ChatRoom = (props: ChatRoomProps) => {
   // const [remotes, remoteDispatch] = useReducer(remoteReducer, []);
   const [mainRemotes, mainRemoteDispatch] = useReducer(remoteReducer, []);
   const [subRemotes, subRemoteDispatch] = useReducer(remoteReducer, []);
+  const [unmuteId, setUnmuteId] = useState(-1);
 
   useEffect(() => {
     // resonanceAudioの初期化
@@ -204,24 +205,24 @@ export const ChatRoom = (props: ChatRoomProps) => {
             <Grid item key={id}>
               <SubTalk
                 talkNum={array.length}
-                unmuteHandler={() => unmuteHandler(id)}
+                unmuteColor={unmuteId === id}
+                unmuteHandler={() => {
+                  setUnmuteId(id);
+                  unmuteHandler(id);
+                }}
               />
-              {/* <button onClick={() => muteHandler(id)}>unmute</button> */}
             </Grid>
           ))}
         </Grid>
       </Grid>
       <Grid item xs={6}>
-        <MainTalk unmuteHandler={() => unmuteHandler()} />
-        {/* <button onClick={() => muteHandler()}>unmute</button> */}
-        {/* <button
-          onClick={() => {
-            console.log(subLocalStreams);
-            subLocalStreams.map((stream) => {
-              console.log(stream.getAudioTracks()[0].enabled);
-            });
+        <MainTalk
+          unmuteColor={unmuteId === -1}
+          unmuteHandler={() => {
+            setUnmuteId(-1);
+            unmuteHandler();
           }}
-        ></button> */}
+        />
       </Grid>
       {/* <Link to="/" onClick={() => handleLeave()}>
           LeaveRoom

@@ -80,8 +80,9 @@ export const ChatRoom = (props: ChatRoomProps) => {
       return;
     }
 
-    const newLocalStream = new MediaStream();
-    newLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
+    // const newLocalStream = new MediaStream();
+    // newLocalStream.addTrack(localStream.clone().getAudioTracks()[0]);
+    const newLocalStream = localStream.clone();
     newLocalStream.getAudioTracks()[0].enabled = joinParams.isMain
       ? true
       : false;

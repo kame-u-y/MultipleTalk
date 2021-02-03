@@ -4,15 +4,21 @@
 
 <img width="480px" alt="スクリーンショット 2021-02-04 2 56 58" src="https://user-images.githubusercontent.com/20572112/106793677-1bf5f500-669b-11eb-8f51-f6b3ba2e34a8.png">
 
+<br>
+
 ## アプリのページ
 
 [MultipleTalk](https://kame-v-d.github.io/MultipleTalk/)
+
+<br>
 
 ## 動作環境
 
 - 現状PCのみで音像定位処理が動作
 
 - Chromeで動作確認
+
+<br>
 
 ## モチベーション
 
@@ -34,6 +40,7 @@
 
 - 同時に流れる音声は空間的に分離すると聞き取りやすくなる
 
+<br>
 
 ## 使用方法
 
@@ -59,6 +66,7 @@ Room NameとDisplay Nameを設定して入室
 
 新たにユーザが入室したとき、そのユーザとだけのチャットが生成される
 
+<br>
 
 ## 実装状況
 

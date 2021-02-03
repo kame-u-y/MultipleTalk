@@ -4,6 +4,16 @@
 
 <img width="480px" alt="スクリーンショット 2021-02-04 2 56 58" src="https://user-images.githubusercontent.com/20572112/106793677-1bf5f500-669b-11eb-8f51-f6b3ba2e34a8.png">
 
+## アプリのページ
+
+[MultipleTalk](https://kame-v-d.github.io/MultipleTalk/)
+
+## 動作環境
+
+- 現状PCのみで音像定位処理が動作
+
+- Chromeで動作確認
+
 ## モチベーション
 
 パラノイアTRPGでのUV(GM)との内緒話をボイスチャットで行いたい
@@ -24,16 +34,6 @@
 
 - 同時に流れる音声は空間的に分離すると聞き取りやすくなる
 
-## アプリのページ
-
-[MultipleTalk](https://kame-v-d.github.io/MultipleTalk/)
-
-
-## 動作環境
-
-- 現状PCのみで音像定位処理が動作
-
-- Chromeで動作確認
 
 ## 使用方法
 
@@ -60,4 +60,19 @@ Room NameとDisplay Nameを設定して入室
 新たにユーザが入室したとき、そのユーザとだけのチャットが生成される
 
 
+## 実装状況
+
+- [x] 入室時の処理
+
+- [x] Resonance Audioによる音像定位（PC & Chrome）
+
+- [ ] メインの通話での現在発言者の表示
+
+- [ ] スマートフォンでの音像定位
+
+- [x] テキストチャットの送受信
+
+- [ ] テキスト送信者の表示
+
+- [ ] 退室時の処理
 

@@ -2,9 +2,7 @@
 
 ボイスチャットによる内緒話をサポートする通話アプリ
 
-<img width="480px" alt="スクリーンショット 2021-02-04 4 41 27" src="https://user-images.githubusercontent.com/20572112/106800114-6a0ef680-66a3-11eb-9977-c6e8bbc17b2f.png">
-
-<img width="480px" alt="スクリーンショット 2021-02-04 2 56 58" src="https://user-images.githubusercontent.com/20572112/106793677-1bf5f500-669b-11eb-8f51-f6b3ba2e34a8.png">
+<img width="450px" alt="スクリーンショット 2021-02-04 4 41 27" src="https://user-images.githubusercontent.com/20572112/106800114-6a0ef680-66a3-11eb-9977-c6e8bbc17b2f.png">　<img width="450px" alt="スクリーンショット 2021-02-04 2 56 58" src="https://user-images.githubusercontent.com/20572112/106793677-1bf5f500-669b-11eb-8f51-f6b3ba2e34a8.png">
 
 <br>
 

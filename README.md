@@ -94,3 +94,8 @@ Room NameとDisplay Nameを設定して入室
 
 - [ ] 退室時の処理
 
+<br>
+
+## 開発記録
+
+[Scrapboxでの雑記](https://scrapbox.io/kame-public/MultipleTalk%E9%96%8B%E7%99%BA%E8%A8%98%E9%8C%B2)

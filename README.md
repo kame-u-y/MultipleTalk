@@ -8,7 +8,7 @@
 
 ## アプリのページ
 
-[MultipleTalk](https://kame-v-d.github.io/MultipleTalk/)
+[MultipleTalk](https://kame-v-y.github.io/MultipleTalk/)
 
 <br>
 
